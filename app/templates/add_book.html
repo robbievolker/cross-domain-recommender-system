@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block content %}
+<body>
+<div class="title">
+    Book Form
+</div>
+    <div id="book-form">
+        <form method="POST">
+            {{ book_form.hidden_tag() }}
+            <div id="book-title" class="form-group d-flex flex-column align-items-center">
+            {{ book_form.title.label(class="form-label") }}<br/>{{ book_form.title(class="form-control")}}<br/>
+            {% for error in book_form.title.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+            </div>
+            <div id="book-author" class="form-group d-flex flex-column align-items-center">
+            {{ book_form.author.label(class="form-label") }}<br/>{{ book_form.author(class="form-control") }}<br/>
+            {% for error in book_form.author.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+            </div>
+            <div id="book-publisher" class="form-group d-flex flex-column align-items-center">
+            {{ book_form.publisher.label(class="form-label") }}<br/>{{ book_form.publisher(class="form-control") }}<br/>
+            {% for error in book_form.publisher.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+            </div>
+            <div id="book-tags" class="form-group d-flex flex-column align-items-center">
+            {{ book_form.tags.label(class="form-label") }}<br/>{{ book_form.tags(class="form-control") }}<br/>
+            {% for error in book_form.publisher.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+            </div>
+            <div id="book-submit" class="form-group d-flex flex-column align-items-center">
+                {{ book_form.submit(class="btn btn-primary btn-lg btn-block") }}
+            </div>
+        </form>
+    </div>
+</body>
+{% endblock %}

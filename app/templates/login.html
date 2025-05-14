@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block content %}
+<form method="POST" action="" novalidate>
+    {{ form.hidden_tag() }}
+    <div id="login-username" class="form-group d-flex flex-column align-items-center">
+        {{ form.username.label(class="form-label") }}<br/>{{ form.username(class="form-control") }}<br/>
+        {% for error in form.username.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+        {% endfor %}
+    </div>
+    <div id="login-password" class="form-group d-flex flex-column align-items-center">
+        {{ form.password.label(class="form-label") }}<br/>{{ form.password(class="form-control") }}<br/>
+        {% for error in form.password.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+        {% endfor %}
+    </div>
+    <div id="login-remember">
+        {{ form.remember_me.label(class="form-label") }}<br/>{{ form.remember_me() }}<br/>
+        {% for error in form.remember_me.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+        {% endfor %}
+    </div>
+
+    <div id="login-submit" class="form-group d-flex flex-column align-items-center">
+        {{ form.submit(class="btn btn-primary btn-lg btn-block") }}
+    </div>
+</form>
+{% endblock %}

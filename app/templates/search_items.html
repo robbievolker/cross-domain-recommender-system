@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="title">
+    Search Database
+</div>
+<br>
+<form method="POST" action="" novalidate>
+    {{ form.hidden_tag() }}
+    <div class="form-group d-flex flex-column align-items-center">
+        {{ form.query(class="form-control") }}<br/>
+        {% for error in form.query.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+        {% endfor %}
+    </div>
+    <br>
+    <div class="form-group d-flex justify-content-center">
+        {{ form.submit(class="btn btn-primary btn-lg btn-block") }}
+    </div>
+</form>
+{% endblock %}

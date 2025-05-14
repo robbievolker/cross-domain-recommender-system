@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block content %}
+<body>
+<div class="title">
+    Game Form
+</div>
+    <div id="game-form">
+        <form method="POST">
+            {{ game_form.hidden_tag() }}
+            <div id="game-title" class="form-group d-flex flex-column align-items-center">
+            {{ game_form.title.label(class="form-label") }}<br/>{{ game_form.title(class="form-control") }}<br/>
+            {% for error in game_form.title.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+            </div>
+            <div id="game-year" class="form-group d-flex flex-column align-items-center">
+            {{ game_form.year.label(class="form-label") }}<br/>{{ game_form.year(class="form-control") }}<br/>
+            {% for error in game_form.title.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+            </div>
+            <div id="game-developer" class="form-group d-flex flex-column align-items-center">
+            {{ game_form.developer.label(class="form-label") }}<br/>{{ game_form.developer(class="form-control") }}<br/>
+            {% for error in game_form.title.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+            </div>
+            <div id="game-tags" class="form-group d-flex flex-column align-items-center">
+            {{ game_form.tags.label(class="form-label") }}<br/>{{ game_form.tags(class="form-control") }}<br/>
+            {% for error in game_form.tags.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+            </div>
+            <div id="game-submit" class="form-group d-flex flex-column align-items-center">
+                {{ game_form.submit(class="btn btn-primary btn-lg btn-block") }}
+            </div>
+        </form>
+    </div>
+</body>
+{% endblock %}

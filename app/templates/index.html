@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="title">
+    Content Recommendations
+</div>
+<div class="center-container" style="margin-top: 30px">
+    <div class="form-container">
+        <form method="POST" action="" novalidate enctype="multipart/form-data">
+            {{ form.hidden_tag() }}
+            <div class="form-group">
+                <div class="form-group d-flex flex-column align-items-center">{{ form.title.label(class="form-label") }}</div>{{ form.title(class="form-control") }}<br/>
+                {% for error in form.title.errors %}
+                    <div class="error-message" style="color: red;">[{{ error }}]</div>
+                {% endfor %}
+            </div>
+            <div class="form-group">
+                <div class="form-group d-flex flex-column align-items-center">{{ form.medium.label(class="form-label") }}</div>{{ form.medium(class="form-control") }}<br/>
+                {% for error in form.medium.errors %}
+                    <div class="error-message" style="color: red;">[{{ error }}]</div>
+                {% endfor %}
+            </div>
+            <div class="form-group">
+                <div class="form-group d-flex flex-column align-items-center">{{ form.weighting.label(class="form-label") }}</div>{{ form.weighting(class="form-control") }}<br/>
+                {% for error in form.weighting.errors %}
+                    <div class="error-message" style="color: red;">[{{ error }}]</div>
+                {% endfor %}
+            </div>
+            <div class="form-group">
+                <div class="form-group d-flex flex-column align-items-center">{{ form.top_nodes.label(class="form-label") }}</div>{{ form.top_nodes(class="form-control") }}<br/>
+                {% for error in form.top_nodes.errors %}
+                    <div class="error-message" style="color: red;">[{{ error }}]</div>
+                {% endfor %}
+            </div>
+            <div class="form-group d-flex justify-content-center"> {{ form.submit(class="btn btn-primary btn-lg btn-block") }}
+            </div>
+        </form>
+    </div>
+</div>
+<br>
+<br>
+{% endblock %}
+{% block content2 %}
+<div class="knowledge-graph">
+
+</div>
+{% endblock %}

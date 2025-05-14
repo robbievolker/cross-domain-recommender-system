@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block content %}
+<br>
+<h2 class="title">About this website</h2>
+<br>
+<div>
+    <p>
+        This web application is designed to provide you with books, films and games recommendations based on an input title. Feel free to
+        contribute via creating an account in order to add new items to the database, upvote existing tags on items and contribute to a
+        dataset that can be used by future developers and researchers to create more advanced recommender systems for users.
+    </p>
+    <br>
+    <p>
+        The core of this application's functionality is the recommender system. For transparency, this system works by:
+    </p>
+    <p><b>1) Using the <a href="https://en.wikipedia.org/wiki/Levenshtein_distance" class="about-link">Levenshtein distance</a> to detect title similarity:</b> This accounts for 20% of the weighting.</p>
+    <p><b>2) Performing a <a href="https://en.wikipedia.org/wiki/Cosine_similarity" class="about-link">Cosine similarity</a> rating on tags associated with two items:</b> This accounts for 60% of the weighting.</p>
+    <p><b>3) Using <a href="https://spacy.io/" class="about-link">spacy</a> to conduct an entity analysis on the titles:</b> This accounts for 20% of the weighting.</p>
+    <br>
+    <p>
+        With thanks to the following API providers: <a href="https://books.google.com/" class="about-link">Google Books</a>, <a href="https://www.omdbapi.com/" class="about-link">OMDb</a> and <a href="https://www.igdb.com/api" class="about-link">IGDb</a>.
+    </p>
+    <br>
+    <p>
+        Thanks also to icons8 for providing the favicons used on this website.
+    </p>
+</div>
+{% endblock %}

@@ -1,0 +1,223 @@
+{% extends "base.html" %}
+{% block content %}
+    <br>
+    <style>
+        .tooltip {
+            position: absolute;
+            text-align: left;
+            width: auto;
+            height: auto;
+            padding: 10px;
+            font: 12px sans-serif;
+            background: lightsteelblue;
+            border: 1px solid #000;
+            border-radius: 8px;
+            pointer-events: none;
+            opacity: 0;
+        }
+
+        .linkTooltip {
+            position: absolute;
+            text-align: left;
+            width: auto;
+            height: auto;
+            padding: 10px;
+            font: 12px sans-serif;
+            background: lightsteelblue;
+            border: 1px solid #000;
+            border-radius: 8px;
+            pointer-events: none;
+            opacity: 0;
+        }
+
+        .highlighted {
+            stroke: orange;
+            stroke-width: 6;
+        }
+
+        .tooltip.book {
+            background: #97dbe4;
+        }
+
+        .tooltip.film {
+            background: #ee828a;
+        }
+
+        .tooltip.game {
+            background: #95f18f;
+        }
+
+        svg {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .graph {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-right: 50px;
+        }
+
+    </style>
+    <div class="graph">
+    <svg id="graph" width="1600" height="1000"></svg>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+    <script>
+        const g_json = JSON.parse({{ graph|tojson }});
+        const db = JSON.parse({{ db|tojson }});
+
+        const width = 1200;
+        const height = 900;
+
+        const svg = d3.select("#graph")
+            .attr("width", "800px")
+            .attr("height", "600px")
+            .attr("style", "outline: thin solid black ");
+
+        const g = svg.append("g");
+
+        const zoom = d3.zoom()
+            .scaleExtent([0.5, 4])
+            .on("zoom", (event) => {
+                g.attr("transform", event.transform);
+            });
+
+        svg.call(zoom);
+
+        const tooltip = d3.select("body").append("div")
+            .attr("class", "tooltip");
+
+        const linkTooltip = d3.select("body").append("div")
+            .attr("class", "linkTooltip" )
+
+        const simulation = d3.forceSimulation(g_json.nodes)
+            .force("link", d3.forceLink(g_json.links).id(d => d.id).distance(200))
+            .force("charge", d3.forceManyBody().strength(-3000))
+            .force("center", d3.forceCenter(width / 2, height / 2))
+            .force("collision", d3.forceCollide().radius(50))
+            .on("tick", ticked);
+
+        const link = g.append("g")
+            .attr("stroke", "#ccc")
+            .selectAll("line")
+            .data(g_json.links)
+            .enter()
+            .append("line")
+            .attr("stroke-width", 3)
+            .on("mouseover", (event, d) => {
+                d3.select(event.target).classed("highlighted", true);
+                const sourceNode = db[d.source.id];
+                const targetNode = db[d.target.id];
+                linkTooltip.transition()
+                    .duration(200)
+                    .style("opacity", .9);
+                linkTooltip.html(`<h6>${sourceNode.Title} <br> -- ${d.weight} -- <br> ${targetNode.Title}</h6>`)
+                    .style("left", (event.pageX + 5) + "px")
+                    .style("top", (event.pageY - 28) + "px");
+            })
+            .on("mouseout", (event, d) => {
+                d3.select(event.target).classed("highlighted", false);
+                linkTooltip.transition()
+                    .duration(500)
+                    .style("opacity", 0);
+            });
+
+
+        const node = g.append("g")
+            .selectAll("image")
+            .data(g_json.nodes)
+            .enter()
+            .append("image")
+            .attr("width", 80)
+            .attr("height", 80)
+            .attr("xlink:href", d => db[d.id].Cover)
+            .call(drag(simulation))
+            .on("mouseover", (event, d) => {
+                const title = db[d.id].Title || "Title Not Found";
+                const itemType = d.id.split(" ")[1];
+                tooltip.attr("class", `tooltip ${itemType}`)
+                    .transition()
+                    .duration(200)
+                    .style("opacity", .9);
+                tooltip.html(`<h6>${title}</h6>`)
+                    .style("left", (event.pageX + 5) + "px")
+                    .style("top", (event.pageY - 28) + "px");
+                d3.select(event.target).style("cursor", "pointer");
+            })
+            .on("mouseout", () => {
+                tooltip.transition()
+                    .duration(500)
+                    .style("opacity", 0);
+            })
+            .on("click", (event, d) => {
+                const title = db[d.id].Title || "Title not found";
+                const query = encodeURIComponent(title);
+                window.open(`search_results?query=${query}`, `_blank`);
+            });
+
+        const linkText = g.append("g")
+            .selectAll("text")
+            .data(g_json.links)
+            .enter()
+            .append("text")
+            .attr("font-size", "14px")
+            .attr("fill", "black")
+            .text(d => d.weight)
+            .attr("dy", "-10px");
+
+
+        node.append("text")
+            .attr("dx", 12)
+            .attr("dy", ".35em")
+            .text(d => d.id);
+
+        function ticked() {
+            link
+                .attr("x1", d => d.source.x)
+                .attr("y1", d => d.source.y)
+                .attr("x2", d => d.target.x)
+                .attr("y2", d => d.target.y);
+
+            linkText
+                .attr("x", d => (d.source.x + d.target.x) / 2)
+                .attr("y", d => (d.source.y + d.target.y) / 2);
+
+            node
+                .attr("x", d => d.x - 25)
+                .attr("y", d => d.y - 25);
+
+        }
+
+        function drag(simulation) {
+            function dragstarted(event, d) {
+                if (!event.active) simulation.alphaTarget(0.3).restart();
+                d.fx = d.x;
+                d.fy = d.y;
+            }
+
+            function dragged(event, d) {
+                d.fx = event.x;
+                d.fy = event.y;
+            }
+
+            function dragended(event, d) {
+                if (!event.active) simulation.alphaTarget(0);
+                d.fx = null;
+                d.fy = null;
+            }
+
+            return d3.drag()
+                .on("start", dragstarted)
+                .on("drag", dragged)
+                .on("end", dragended);
+        }
+
+        function updateTooltip(tooltip, title) {
+            tooltip.html('<h4>%{title}</h4>');
+        }
+    </script>
+
+{% endblock %}

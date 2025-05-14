@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="title">
+    Film Form
+</div>
+    <div id="film-form">
+        <form method="POST">
+          {{ film_form.hidden_tag() }}
+            <div id="film-title" class="form-group d-flex flex-column align-items-center">
+            {{ film_form.title.label(class="form-label") }}<br/>{{ film_form.title(class="form-control") }}<br/>
+            {% for error in film_form.title.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+            </div>
+            <div id="film-director" class="form-group d-flex flex-column align-items-center">
+            {{ film_form.director.label(class="form-label") }}<br/>{{ film_form.director(class="form-control") }}<br/>
+            {% for error in film_form.director.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+            </div>
+            <div id="film-year" class="form-group d-flex flex-column align-items-center">
+            {{ film_form.year.label(class="form-label") }}<br/>{{ film_form.year(class="form-control") }}<br/>
+            {% for error in film_form.year.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+            </div>
+            <div id="film-prod" class="form-group d-flex flex-column align-items-center">
+            {{ film_form.production_company.label(class="form-label") }}<br/>{{ film_form.production_company(class="form-control") }}<br/>
+            {% for error in film_form.production_company.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+            </div>
+            <div id="film-tags" class="form-group d-flex flex-column align-items-center">
+            {{ film_form.tags.label(class="form-label") }}<br/>{{ film_form.tags(class="form-control") }}<br/>
+            {% for error in film_form.tags.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+            </div>
+            <div id="film-submit" class="form-group d-flex justify-content-center">
+                {{ film_form.submit(class="btn btn-primary btn-lg btn-block") }}
+            </div>
+        </form>
+    </div>
+</body>
+{% endblock %}

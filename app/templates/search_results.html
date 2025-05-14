@@ -1,0 +1,145 @@
+{% extends "base.html" %}
+{% block content %}
+    <style>
+        .item {
+            display: flex;
+            align-items: flex-start;
+            margin: 30px;
+        }
+
+        .cover {
+            margin-right: 20px;
+            margin-top: 60px;
+        }
+
+        img {
+            width: 128px;
+            height: 210px;
+        }
+
+        .right {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+        }
+
+        .info {
+            margin-bottom: 10px;
+        }
+
+        .tags {
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        .tags span {
+            background-color: #d9dbde;
+            padding: 5px;
+            border-radius: 3px;
+            margin: 5px;
+        }
+    </style>
+    <div>
+        <h2>Search results for {{ query }}</h2>
+    </div>
+    {% if search_results %}
+        <ul class="results">
+            {% for result in search_results %}
+                <li class="item">
+                    <div class="cover">
+                        <img src="{{ result.item.cover }}" alt="{{ result.item.title }} cover">
+                    </div>
+                    <div class="right">
+                      <div class="info">
+                        {% if result.type == "book" %}
+                            <h4>{{ result.item.title }}</h4>
+                            <h5>Book</h5>
+                            <p>Author: {{ result.item.author }}</p>
+                            <p>ISBN: {{ result.item.isbn }}</p>
+                            <p>Publisher: {{ result.item.publisher }}</p>
+                        {% elif result.type == "film" %}
+                            <h4>{{ result.item.title }}</h4>
+                            <h5>Film</h5>
+                            <p>Director: {{ result.item.director }}</p>
+                            <p>Year: {{ result.item.year }}</p>
+                        {% elif result.type == "game" %}
+                            <h4>{{ result.item.title }}</h4>
+                            <h5>Game</h5>
+                            <p>Developer: {{ result.item.developer }}</p>
+                            <p>Year: {{ result.item.year }}</p>
+                        {% endif %}
+                      </div>
+                      <div class="tags">
+                        <p>Tags: </p>
+                        {% for tag in result.tags %}
+                            <button id="{{ result.type }}-{{ tag.id }}-{{ result.item.id }}" onclick="updateTag({{ current_user.user_id }}, {{ result.item }}, {{ tag }})">{{ tag.tag }}: {{ tag.count }}</button><br/>
+                        {% endfor %}
+                      </div>
+                      <div class="tags-form">
+                          <form method="POST">
+                              {{ form.csrf_token() }}
+                              <input type="hidden" name="id" value="{{ result.item.id }}">
+                              <input type="hidden" name="type" value="{{ result.item.type }}">
+                              <div id="tags">
+                                {{ form.tags.label(class="form-label") }}<br/>{{ form.tags(class="form-control") }}
+                                {% for error in form.tags.errors %}
+                                <span style="color: red;">[{{ error }}]</span>
+                                {% endfor %}
+                              </div>
+                              <br>
+                              <div id="submit">
+                                  {{ form.submit(class="btn btn-primary btn-block") }}
+                              </div>
+                          </form>
+                      </div>
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+    <p>No results found. Please update your query and try again.</p>
+    {% endif %}
+    <script>
+    function updateTag(user, item, tag, type) {
+        console.log(item);
+        console.log(tag);
+        console.log(item.title);
+
+        const data = {
+            'user_id' : user,
+            'item_id' : item.id,
+            'item_type': item.type,
+            'tag_id': tag.id
+        };
+        console.log(data);
+
+        fetch('/update_tag', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        }).then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    const tagButton = document.getElementById(`${item.type}-${tag.id}-${item.id}`);
+                    if (tagButton) {
+                        if (data.new_count > 0) {
+                            tagButton.textContent = `${tag.tag}: ${data.new_count}`;
+                        } else {
+                            tagButton.parentNode.removeChild(tagButton);
+                        }
+                    } else {
+                        console.error("Couldn't find tag button element with ID:", tag.id)
+                }
+            } else {
+                alert('Tag update failed: ' + data.message);
+            }
+            })
+            .catch(error => {
+                alert('Error occurred, please reload and try again: ' + error)
+        })
+
+    }
+    </script>
+{% endblock %}
